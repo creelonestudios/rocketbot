@@ -45,6 +45,18 @@ function checkCommand(s) {
 	return {};
 }
 
+function embed(title, desc, color, footer) {
+	var embed = new Discord.MessageEmbed();
+	if(color == "error") color = [255, 0, 0];
+	if(color == "info") color = [150, 150, 150];
+	if(color == "success") color = [0, 230, 0];
+	embed.setTitle(title || "Embed");
+	embed.setColor(color || [0, 0, 0]);
+	embed.setDescription(desc || "No description.");
+	embed.setFooter(footer || "");
+	return embed;
+}
+
 commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
 
 client.login(token);
