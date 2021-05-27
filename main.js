@@ -56,7 +56,11 @@ commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
 commands.push(new Command("pong", [], msg => { msg.channel.send("wait. that's my job."); }));
 commands.push(new Command("where", ["to where","towhere"], msg => { msg.channel.send(":rocket: To the moon!"); }));
 commands.push(new Command("tothemoon", ["to the moon","to moon","tomoon"], msg => { msg.channel.send("Yes. That's right!"); }));
-commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => { msg.channel.send("such doge. wow"); })); // make this random
+commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => {
+    let texts = ["such doge. wow", "Dogecoin to the moon :rocket:", "To the moon!", "Dogecoin > Bitcoin", "Bring em to the moon", "Also try Server System!"];
+    let text = texts[Math.floor(Math.random()*(texts.length))];
+    msg.channel.send(text);
+})); // make this random. Can do
 commands.push(new Command("help", ["hilfe","i need help"], msg => { msg.channel.send("insert help text here"); }));
 commands.push(new Command("devs", ["dev","contributors","by","is by","credit"], msg => { msg.channel.send("insert credits here"); }));
 commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
