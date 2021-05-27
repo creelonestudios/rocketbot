@@ -32,7 +32,7 @@ client.on("message", msg => {
 	}
 });
 
-checkCommand(s) {
+function checkCommand(s) {
 	for(var i = 0; i < commands.length; i++) {
 		var cmd = commands[i];
 		if(s.starsWith(cmd.name)) return { cmd: cmd, keyword: cmd.name};
