@@ -15,7 +15,7 @@ const Errors = require("./error.js");
 const commands = [];
 
 const devs = [];
-devs.push({name: "j0code", id: "418109742183874560", role: "Creator & Main Contributor", media: [{name: "Discord", value: "@j0code#7360"},{name: "GitHub", value: "@j0code"},{name: "Twitter", value: "@j0naslp_yt"}], color: "#8000ff"});
+devs.push({name: "j0code", id: "418109742183874560", role: "Creator & Main Contributor", media: [{name: "GitHub", value: "@j0code"},{name: "Twitter", value: "@j0naslp_yt"}], color: "#8000ff"});
 
 client.on("ready", () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -143,16 +143,17 @@ commands.push(new Command("help", ["help","hilfe","hilf mir","ich brauche hilfe"
 	}
 }));
 
-commands.push(new Command("devs", ["devs","dev","contributors","by","is by","made by","credit"], "Credits", "", msg => {
+commands.push(new Command("credits", ["devs","dev","contributors","by","is by","made by","credits","credit"], "Credits", "", msg => {
 	for(var i = 0; i < devs.length; i++) {
 		let dev = devs[i];
 		let user = client.users.cache.get(dev.id);
 		let fields = [];
+		if(user) fields.push({name: "Discord", value: "<@" + user.id + ">" + " (" + user.tag + ")", inline: true});
 		for(var j = 0; j < dev.media.length; j++) {
 			let media = dev.media[j];
 			fields.push({name: media.name, value: media.value, inline: true});
 		}
-		msg.channel.send(embed({author: {name: dev.name}, iconURL: user.avatarURL({dynamic: true}), description: dev.role, fields: fields, color: dev.color}));
+		msg.channel.send(embed({author: {name: dev.name, iconURL: user.avatarURL({dynamic: true})}, description: dev.role, fields: fields, color: dev.color, thumbnail: {url: user.avatarURL({dynamic: true})}}));
 	}
 }));
 
