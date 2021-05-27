@@ -13,11 +13,12 @@ client.on("ready", () => {
 });
 
 client.on("message", msg => {
+	console.log(msg.guild.name + " #" + msg.channel.name + " " + msg.author.tag + ": " + msg.content);
 	let channel = msg.channel;
-	if(msg.content == "rocket") {
+	if(msg.content.toLowerCase() == "rocket") {
 		// change to embed containing bot description and stuff later
 		channel.send("that's me.");
-	} else if(msg.content.startsWith(prefix+" ")) {
+	} else if(msg.content.toLowerCase().startsWith(prefix+" ")) {
 		let s = msg.content.substring(7);
 		let o = checkCommand(s);
 		if(o.cmd) {
@@ -34,17 +35,19 @@ client.on("message", msg => {
 });
 
 function checkCommand(s) {
+	s = s.toLowerCase()
 	for(var i = 0; i < commands.length; i++) {
 		var cmd = commands[i];
-		if(s.starsWith(cmd.name)) return { cmd: cmd, keyword: cmd.name};
+		if(s.startsWith(cmd.name)) return { cmd: cmd, keyword: cmd.name};
 		var kw = cmd.keywords;
 		for(var j = 0; j < kw.length; j++) {
-			if(s.starsWith(kw[j])) return { cmd: cmd, keyword: kw[j]};
+			if(s.startsWith(kw[j])) return { cmd: cmd, keyword: kw[j]};
 		}
 	}
 	return {};
 }
 
 commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
+commands.push(new Command("pong", [], msg => { msg.channel.send("wait. that's my job."); }));
 
 client.login(token);
