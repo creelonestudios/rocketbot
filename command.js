@@ -1,10 +1,10 @@
 module.exports = class Command {
-	#name, #keywords, #run, #help;
+	#name; #keywords; #run; #help;
 	constructor(name, keywords, run, help) {
 		this.#name = name || "";
 		this.#keywords = keywords || [];
-		this.#run = run || () => {};
-		this.#help = help || () => {};
+		this.#run = run || (() => {});
+		this.#help = help || (() => {});
 	}
 	
 	get name() {

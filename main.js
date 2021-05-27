@@ -4,6 +4,7 @@ const prefix = "rocket";
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
+const Command = require("./command.js");
 
 const commands = [];
 
@@ -44,6 +45,6 @@ function checkCommand(s) {
 	return {};
 }
 
-commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); });
+commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
 
 client.login(token);
