@@ -1,11 +1,13 @@
 require("dotenv").config();
 const token = process.env.TOKEN;
+if(!token) { console.log("Token not found."); process.kill(1); };
 const ignoreUser = process.env.IGNORE;
 const prefix = "rocket";
 const version = "0.1.0";
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
+const ImgAPI = require("imageapi.js");
 const Command = require("./command.js");
 
 const commands = [];
@@ -87,7 +89,7 @@ commands.push(new Command("pong", [], msg => { msg.channel.send("wait. that's my
 commands.push(new Command("meme", [], async function(msg) {
     let subreddits = ["memes", "amongusmemes", "MemeEconomy", "ComedyCemetery", "dankmemes", "terriblefacebookmemes", "funny"];
     let subreddit = subreddits[Math.floor(Math.random()*(subreddits.length))];
-    let img = await require("imageapi.js")(subreddit);
+    let img = await ImgAPI(subreddit);
 
     // need dc embed bcuz image wow
     const memeembed = new Discord.MessageEmbed().setTitle("Fresh meme from r/" + subreddit).setColor("RANDOM").setImage(img);
@@ -103,24 +105,20 @@ commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => {
 })); // make this random. Can do
 commands.push(new Command("help", ["hilfe","i need help"], msg => { msg.channel.send("insert help text here"); }));
 commands.push(new Command("devs", ["dev","contributors","by","is by","credit"], msg => { msg.channel.send("insert credits here"); }));
-commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
-commands.push(new Command("delete", ["delete that", "del", "del that", "deletethat", "delthat"], msg => {
-    console.log("COOP WITH ME");
-    if(true) {
-        if(client.user.lastMessage != null) {
-            client.user.lastMessage.delete();
-            msg.channel.send("Sure");
-        } else {
-            msg.channel.send("Sry i never sent anything");
-        }
-    }
-    else;
-commands.push(new Command("amiignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], msg => {
+commands.push(new Command("amiignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], msg => { // has to be cmd #8 !!!
 	if(msg.author.id == ignoreUser) {
 		msg.channel.send("I'm told not to talk y- oh.");
 	} else {
 		msg.channel.send("No. If I don't answer to you, it's your fault and/or I have a :bug:");
 	}
 }));
-
+commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("delete", ["delete that", "del", "del that", "deletethat", "delthat"], msg => {
+	if(client.user.lastMessage != null) {
+		client.user.lastMessage.delete();
+		msg.channel.send("Sure");
+	} else {
+		msg.channel.send("Sry i never sent anything");
+	}
+}));
 client.login(token);
