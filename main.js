@@ -95,7 +95,8 @@ commands.push(new Command("ping", ["ping"], "Pong.", "", msg => { msg.channel.se
 commands.push(new Command("pong", ["pong"], "Uhm...", "", msg => { msg.channel.send("wait. that's my job."); }));
 commands.push(new Command("where", ["where","to where","towhere","goes where"], "Where does the Rocket go to?", "", msg => { msg.channel.send(":rocket: To the moon!"); }));
 commands.push(new Command("to the moon", ["tothemoon", "to the moon","to moon","tomoon"], "To the moon!", "", msg => { msg.channel.send("Yes. That's right!"); }));
-commands.push(new Command("launch", ["launch", "start"], "Lauch the Rocket.", "", msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("launch", ["launch","start"], "Lauch the Rocket.", "", msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("invite", ["invite","get"], "Get bot invite.", "", msg => { msg.channel.send(embed({author: {name: "Bot Invite"}, title: "[Click me]", url: "https://discord.com/api/oauth2/authorize?client_id=847180979713212426&permissions=8&scope=bot%20applications.commands"})); }));
 
 // complex commands
 commands.push(new Command("help", ["help","hilfe","hilf mir","ich brauche hilfe","ich benötige hilfe","i need help with", "i need help","cmds","cmdlist","cmd list","commands","command list"], "Command List / Info", "[cmd...]", (msg,keyword,s) => {
