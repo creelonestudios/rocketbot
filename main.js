@@ -61,5 +61,15 @@ function embed(title, desc, color, footer) {
 
 commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
 commands.push(new Command("pong", [], msg => { msg.channel.send("wait. that's my job."); }));
+commands.push(new Command("meme", [], async function(msg) {
+    let subreddits = ["memes", "amongusmemes", "MemeEconomy", "ComedyCemetery", "dankmemes", "terriblefacebookmemes", "funny"];
+    let subreddit = subreddits[Math.floor(Math.random()*(subreddits.length))];
+    let img = await require("imageapi.js")(subreddit);
+
+    // need dc embed bcuz image wow
+    const memeembed = new Discord.MessageEmbed().setTitle("Fresh meme from r/" + subreddit).setColor("RANDOM").setImage(img);
+
+    msg.channel.send(memeembed);
+}));
 
 client.login(token);
