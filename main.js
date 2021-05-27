@@ -18,6 +18,7 @@ client.on("message", msg => {
 	if(msg.content.toLowerCase() == "rocket") {
 		// change to embed containing bot description and stuff later
 		channel.send("that's me.");
+		channel.send(embed({title: "Rocket", description: "Rocket to get doge to the moon\n\nSimple bot you can talk to and that helps you.\nTry `rocket help` or `rocket devs`.", footer: {text: "Rocket vINSERt VERSION HERE"}}));
 	} else if(msg.content.toLowerCase().startsWith(prefix+" ")) {
 		let s = msg.content.substring(7);
 		let o = checkCommand(s);
@@ -47,16 +48,8 @@ function checkCommand(s) {
 	return {};
 }
 
-function embed(title, desc, color, footer) {
-	var embed = new Discord.MessageEmbed();
-	if(color == "error") color = [255, 0, 0];
-	if(color == "info") color = [150, 150, 150];
-	if(color == "success") color = [0, 230, 0];
-	embed.setTitle(title || "Embed");
-	embed.setColor(color || [0, 0, 0]);
-	embed.setDescription(desc || "No description.");
-	embed.setFooter(footer || "");
-	return embed;
+function embed(options) {
+	return new Discord.MessageEmbed(options);
 }
 
 commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
