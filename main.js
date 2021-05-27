@@ -1,6 +1,8 @@
 require("dotenv").config();
 const token = process.env.TOKEN;
+const ignoreUser = process.env.IGNORE;
 const prefix = "rocket";
+const version = "0.1.0";
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
@@ -14,11 +16,30 @@ client.on("ready", () => {
 
 client.on("message", msg => {
 	console.log(msg.guild.name + " #" + msg.channel.name + " " + msg.author.tag + ": " + msg.content);
+	if(msg.author.id == ignoreUser) {
+		if(msg.content.toLowerCase().startsWith(prefix+" ")) {
+			let s = msg.content.substring(7);
+			var cmd = commands[8]; // amiignored
+			if(s.startsWith(cmd.name)) {
+				s = s.substring(cmd.name.length+1);
+				cmd.run(msg, cmd.name, s);
+				return;
+			}
+			var kw = cmd.keywords;
+			for(var j = 0; j < kw.length; j++) {
+				if(s.startsWith(kw[j])) {
+					s = s.substring(kw[j].length+1);
+					cmd.run(msg, kw[j], s);
+					return;
+				}
+			}
+		}
+		return;
+	}
 	let channel = msg.channel;
 	if(msg.content.toLowerCase() == "rocket") {
 		// change to embed containing bot description and stuff later
-		channel.send("that's me.");
-		channel.send(embed({title: "Rocket", description: "Rocket to get doge to the moon\n\nSimple bot you can talk to and that helps you.\nTry `rocket help` or `rocket devs`.", footer: {text: "Rocket vINSERt VERSION HERE"}}));
+		channel.send(embed({description: "Rocket to get doge to the moon\n\nSimple bot you can talk to and that helps you.\nTry `rocket help` or `rocket devs`.", author: {name: "Bot Info"}}));
 	} else if(msg.content.toLowerCase().startsWith(prefix+" ")) {
 		let s = msg.content.substring(7);
 		let o = checkCommand(s);
@@ -49,6 +70,15 @@ function checkCommand(s) {
 }
 
 function embed(options) {
+	if(!options.footer) options.footer = {};
+	if(!options.footer.text) options.footer.text = "Rocket v" + version;
+	if(!options.footer.iconURL) options.footer.iconURL = client.user.avatarURL({dynamic: true}); // dynamic gets .gif url if animated
+	if(!options.color) options.color = "#55ACEE";
+	if(!options.url) options.url = "https://github.com/creelonestudios/rocketbot";
+	if(!options.author) options.author = {};
+	if(!options.author.name) options.author.name = "Rocket";
+	if(!options.author.url) options.author.url = "https://github.com/creelonestudios/rocketbot";
+	if(!options.author.iconURL) options.author.iconURL = client.user.avatarURL({dynamic: true}); // dynamic gets .gif url if animated
 	return new Discord.MessageEmbed(options);
 }
 
@@ -71,6 +101,12 @@ commands.push(new Command("delete", ["delete that", "del", "del that", "deleteth
         }
     }
     else;
+commands.push(new Command("amiignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], msg => {
+	if(msg.author.id == ignoreUser) {
+		msg.channel.send("I'm told not to talk y- oh.");
+	} else {
+		msg.channel.send("No. If I don't answer to you, it's your fault and/or I have a :bug:");
+	}
 }));
 
 client.login(token);
