@@ -22,14 +22,9 @@ client.on("message", msg => {
 		if(msg.content.toLowerCase().startsWith(prefix+" ")) {
 			let s = msg.content.substring(7);
 			var cmd = commands[8]; // amiignored
-			if(s.startsWith(cmd.name)) {
-				s = s.substring(cmd.name.length+1);
-				cmd.run(msg, cmd.name, s);
-				return;
-			}
 			var kw = cmd.keywords;
 			for(var j = 0; j < kw.length; j++) {
-				if(s.startsWith(kw[j])) {
+				if(s.toLowerCase().startsWith(kw[j])) {
 					s = s.substring(kw[j].length+1);
 					cmd.run(msg, kw[j], s);
 					return;
@@ -47,6 +42,7 @@ client.on("message", msg => {
 		let o = checkCommand(s);
 		if(o.cmd) {
 			s = s.substring(o.keyword.length+1);
+			console.log("cmd:", o.cmd.name, "keyword:", o.keyword, "s:", s);
 			try {
 				o.cmd.run(msg, o.keyword, s);
 			} catch(e) {
@@ -62,7 +58,6 @@ function checkCommand(s) {
 	s = s.toLowerCase()
 	for(var i = 0; i < commands.length; i++) {
 		var cmd = commands[i];
-		if(s.startsWith(cmd.name)) return { cmd: cmd, keyword: cmd.name};
 		var kw = cmd.keywords;
 		for(var j = 0; j < kw.length; j++) {
 			if(s.startsWith(kw[j])) return { cmd: cmd, keyword: kw[j]};
@@ -72,6 +67,7 @@ function checkCommand(s) {
 }
 
 function embed(options) {
+	options = options || {};
 	if(!options.footer) options.footer = {};
 	if(!options.footer.text) options.footer.text = "Rocket v" + version;
 	if(!options.footer.iconURL) options.footer.iconURL = client.user.avatarURL({dynamic: true}); // dynamic gets .gif url if animated
@@ -84,23 +80,77 @@ function embed(options) {
 	return new Discord.MessageEmbed(options);
 }
 
+// COMMANDS //
+/* 
+	commands.push(new Command("name", ["keyword1","keyword2"], "description", "syn <ta> [x]", (msg, keyword, s) => { // run }));
+*/
+
 // one line commands
-commands.push(new Command("ping", [], msg => { msg.channel.send("pong."); }));
-commands.push(new Command("pong", [], msg => { msg.channel.send("wait. that's my job."); }));
-commands.push(new Command("where", ["to where","towhere"], msg => { msg.channel.send(":rocket: To the moon!"); }));
-commands.push(new Command("tothemoon", ["to the moon","to moon","tomoon"], msg => { msg.channel.send("Yes. That's right!"); }));
-commands.push(new Command("help", ["hilfe","i need help"], msg => { msg.channel.send("insert help text here"); }));
-commands.push(new Command("devs", ["dev","contributors","by","is by","credit"], msg => { msg.channel.send("insert credits here"); }));
-commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("ping", ["ping"], "Pong.", "", msg => { msg.channel.send("pong."); }));
+commands.push(new Command("pong", ["pong"], "Uhm...", "", msg => { msg.channel.send("wait. that's my job."); }));
+commands.push(new Command("where", ["where","to where","towhere","goes where"], "Where does the Rocket go to?", "", msg => { msg.channel.send(":rocket: To the moon!"); }));
+commands.push(new Command("to the moon", ["tothemoon", "to the moon","to moon","tomoon"], "To the moon!", "", msg => { msg.channel.send("Yes. That's right!"); }));
+commands.push(new Command("launch", ["launch", "start"], "Lauch the Rocket.", "", msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
 
 // complex commands
-commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => {
+commands.push(new Command("help", ["help","hilfe","hilf mir","ich brauche hilfe","ich benötige hilfe","i need help with", "i need help","cmds","cmdlist","cmd list","commands","command list"], "Command List / Info", "[cmd...]", (msg,keyword,s) => {
+	if(s.length > 0) {
+		let o = checkCommand(s);
+		if(o.cmd) {
+			s = s.substring(o.keyword.length+1);
+			var help = o.cmd.help(msg, o.keyword, s);
+			console.log("help:", help);
+			if(!help.error) {
+				var desc = help.description;
+				var fields = [];
+				if(help.syntax) desc += "\nSyntax: `" + help.syntax + "`";
+				if(help.keywords) desc += "\nKeywords: " + help.keywords.join(", ");
+				if(help.subcmds.length > 0) {
+					desc += "\nSubcommands:";
+					for(var i = 0; i < help.subcmds.length; i++) {
+						var cmd = help.subcmds[i];
+						var field = {};
+						field.name = cmd.name;
+						field.value = cmd.description;
+						field.inline = true;
+						fields.push(field);
+					}
+				}
+				msg.channel.send(embed({author: {name: "Rocket Command Info:" + help.path}, description: desc, fields: fields}));
+			} else {
+				console.log("E");
+				msg.channel.send(embed({author: {name: "Rocket Command Info:" + help.path}, description: help.description, color: "#A0041E"}));
+			}
+		} else {
+			msg.channel.send("Unknown Command: " + s);
+			console.log("s:", s);
+		}
+	} else {
+		var fields = [];
+		for(var i = 0; i < commands.length; i++) {
+			var cmd = commands[i];
+			var field = {};
+			field.name = cmd.name;
+			field.value = cmd.description;
+			field.inline = true;
+			fields.push(field);
+		}
+		msg.channel.send(embed({author: {name: "Rocket Command List"}, description: "This is the command list of Rocket.\nUse `rocket help [command...]` to get more info about a specific command.", fields: fields}));
+	}
+}));
+
+commands.push(new Command("devs", ["devs","dev","contributors","by","is by","made by","credit"], "Credits", "", msg => {
+	msg.channel.send("insert credits here");
+}));
+
+
+commands.push(new Command("doge", ["doge","dogecoin","shibe","dogeshibe"], "many doge text", "", msg => {
     let texts = ["such doge. wow", "Dogecoin to the moon :rocket:", "To the moon!", "Dogecoin > Bitcoin"];
     let text = texts[Math.floor(Math.random()*(texts.length))];
     msg.channel.send(text);
 }));
 
-commands.push(new Command("amiignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], msg => { // has to be cmd #8 !!!
+commands.push(new Command("am i ignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], "Determine whether the bot ignores you. (Dev)", "", msg => { // has to be cmd #8 !!!
 	if(msg.author.id == ignoreUser) {
 		msg.channel.send("I'm told not to talk y- oh.");
 	} else {
@@ -108,7 +158,7 @@ commands.push(new Command("amiignored", ["am i ignored","do you ignore me","igno
 	}
 }));
 
-commands.push(new Command("meme", [], async function(msg) {
+commands.push(new Command("meme", ["memes","meme","fresh memes","fresh meme","reddit","reddit meme","subreddit"], "Fresh Memes", "", async function(msg) {
     let subreddits = ["memes", "amongusmemes", "MemeEconomy", "ComedyCemetery", "dankmemes", "terriblefacebookmemes", "funny"];
     let subreddit = subreddits[Math.floor(Math.random()*(subreddits.length))];
     let img = await ImgAPI(subreddit);
@@ -119,7 +169,7 @@ commands.push(new Command("meme", [], async function(msg) {
     msg.channel.send(memeembed);
 }));
 
-commands.push(new Command("delete", ["delete that", "del", "del that", "deletethat", "delthat"], msg => {
+commands.push(new Command("delete", ["delete", "delete that", "del", "del that", "deletethat", "delthat"], "Deprecated. Please do not use.", "", msg => {
 	if(client.user.lastMessage != null) {
 		client.user.lastMessage.delete();
 		msg.channel.send("Sure");
