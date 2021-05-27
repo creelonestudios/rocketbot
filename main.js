@@ -60,5 +60,17 @@ commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => { msg
 commands.push(new Command("help", ["hilfe","i need help"], msg => { msg.channel.send("insert help text here"); }));
 commands.push(new Command("devs", ["dev","contributors","by","is by","credit"], msg => { msg.channel.send("insert credits here"); }));
 commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("delete", ["delete that", "del", "del that", "deletethat", "delthat"], msg => {
+    console.log("COOP WITH ME");
+    if(true) {
+        if(client.user.lastMessage != null) {
+            client.user.lastMessage.delete();
+            msg.channel.send("Sure");
+        } else {
+            msg.channel.send("Sry i never sent anything");
+        }
+    }
+    else;
+}));
 
 client.login(token);
