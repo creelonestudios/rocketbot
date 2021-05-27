@@ -1,5 +1,6 @@
 require("dotenv").config();
 const token = process.env.TOKEN;
+const ignoreUser = process.env.IGNORE;
 const prefix = "rocket";
 const version = "0.1.0";
 
@@ -15,6 +16,7 @@ client.on("ready", () => {
 
 client.on("message", msg => {
 	console.log(msg.guild.name + " #" + msg.channel.name + " " + msg.author.tag + ": " + msg.content);
+	if(msg.author.id == ignoreUser) return;
 	let channel = msg.channel;
 	if(msg.content.toLowerCase() == "rocket") {
 		// change to embed containing bot description and stuff later
