@@ -4,13 +4,18 @@ if(!token) { console.log("Token not found."); process.kill(1); };
 const ignoreUser = process.env.IGNORE;
 const prefix = "rocket";
 const version = "0.1.0";
+const colors = { main: "#55ACEE", error: "#A0041E" };
 
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ImgAPI = require("imageapi.js");
 const Command = require("./command.js");
+const Errors = require("./error.js");
 
 const commands = [];
+
+const devs = [];
+devs.push({name: "j0code", id: "418109742183874560", role: "Creator & Main Contributor", media: [{name: "Discord", value: "@j0code#7360"},{name: "GitHub", value: "@j0code"},{name: "Twitter", value: "@j0naslp_yt"}], color: "#8000ff"});
 
 client.on("ready", () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -46,7 +51,7 @@ client.on("message", msg => {
 			try {
 				o.cmd.run(msg, o.keyword, s);
 			} catch(e) {
-				// send error msg
+				channel.send(embed({author: {name: e.name}, description: e.description, color: colors.error }));
 			}
 		} else {
 			channel.send("Unkown command.");
@@ -71,7 +76,7 @@ function embed(options) {
 	if(!options.footer) options.footer = {};
 	if(!options.footer.text) options.footer.text = "Rocket v" + version;
 	if(!options.footer.iconURL) options.footer.iconURL = client.user.avatarURL({dynamic: true}); // dynamic gets .gif url if animated
-	if(!options.color) options.color = "#55ACEE";
+	if(!options.color) options.color = colors.main;
 	if(!options.url) options.url = "https://github.com/creelonestudios/rocketbot";
 	if(!options.author) options.author = {};
 	if(!options.author.name) options.author.name = "Rocket";
@@ -118,8 +123,7 @@ commands.push(new Command("help", ["help","hilfe","hilf mir","ich brauche hilfe"
 				}
 				msg.channel.send(embed({author: {name: "Rocket Command Info:" + help.path}, description: desc, fields: fields}));
 			} else {
-				console.log("E");
-				msg.channel.send(embed({author: {name: "Rocket Command Info:" + help.path}, description: help.description, color: "#A0041E"}));
+				msg.channel.send(embed({author: {name: "Rocket Command Info:" + help.path}, description: help.description, color: colors.error}));
 			}
 		} else {
 			msg.channel.send("Unknown Command: " + s);
@@ -140,7 +144,16 @@ commands.push(new Command("help", ["help","hilfe","hilf mir","ich brauche hilfe"
 }));
 
 commands.push(new Command("devs", ["devs","dev","contributors","by","is by","made by","credit"], "Credits", "", msg => {
-	msg.channel.send("insert credits here");
+	for(var i = 0; i < devs.length; i++) {
+		let dev = devs[i];
+		let user = client.users.cache.get(dev.id);
+		let fields = [];
+		for(var j = 0; j < dev.media.length; j++) {
+			let media = dev.media[j];
+			fields.push({name: media.name, value: media.value, inline: true});
+		}
+		msg.channel.send(embed({author: {name: dev.name}, iconURL: user.avatarURL({dynamic: true}), description: dev.role, fields: fields, color: dev.color}));
+	}
 }));
 
 
@@ -177,4 +190,13 @@ commands.push(new Command("delete", ["delete", "delete that", "del", "del that",
 		msg.channel.send("Sry i never sent anything");
 	}
 }));
+
+commands.push(new Command("say", ["say","write","repeat"], "Rocket repeats what you said", "<msg>", (msg, keyword, s) => {
+	if(s.length > 0) {
+		msg.channel.send(s);
+	} else {
+		throw new Errors.MissingArgumentError("msg");
+	}
+}));
+
 client.login(token);

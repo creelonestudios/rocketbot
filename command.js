@@ -9,6 +9,10 @@ module.exports = class Command {
 		this.#subcmds = [];
 	}
 	
+	static getArgs(s) {
+		s.split(" ");
+	}
+	
 	get name() {
 		return this.#name;
 	}
