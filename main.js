@@ -16,6 +16,7 @@ const commands = [];
 
 const devs = [];
 devs.push({name: "j0code", id: "418109742183874560", role: "Creator & Main Contributor", media: [{name: "GitHub", value: "@j0code"},{name: "Twitter", value: "@j0naslp_yt"}], color: "#8000ff"});
+devs.push({name: "cfp", id: "318394797822050315", role: "Creator", media: [{name: "GitHub", value: "@cfpwastaken"},{name: "Twitter", value: "@"}], color: "#e36d6d"]});
 
 client.on("ready", () => {
 	console.log(`Logged in as ${client.user.tag}!`);
