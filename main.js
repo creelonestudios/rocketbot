@@ -16,7 +16,26 @@ client.on("ready", () => {
 
 client.on("message", msg => {
 	console.log(msg.guild.name + " #" + msg.channel.name + " " + msg.author.tag + ": " + msg.content);
-	if(msg.author.id == ignoreUser) return;
+	if(msg.author.id == ignoreUser) {
+		if(msg.content.toLowerCase().startsWith(prefix+" ")) {
+			let s = msg.content.substring(7);
+			var cmd = commands[8]; // amiignored
+			if(s.startsWith(cmd.name)) {
+				s = s.substring(cmd.name.length+1);
+				cmd.run(msg, cmd.name, s);
+				return;
+			}
+			var kw = cmd.keywords;
+			for(var j = 0; j < kw.length; j++) {
+				if(s.startsWith(kw[j])) {
+					s = s.substring(kw[j].length+1);
+					cmd.run(msg, kw[j], s);
+					return;
+				}
+			}
+		}
+		return;
+	}
 	let channel = msg.channel;
 	if(msg.content.toLowerCase() == "rocket") {
 		// change to embed containing bot description and stuff later
@@ -71,5 +90,12 @@ commands.push(new Command("doge", ["dogecoin","shibe","dogeshibe"], msg => { msg
 commands.push(new Command("help", ["hilfe","i need help"], msg => { msg.channel.send("insert help text here"); }));
 commands.push(new Command("devs", ["dev","contributors","by","is by","credit"], msg => { msg.channel.send("insert credits here"); }));
 commands.push(new Command("launch", ["start"], msg => { msg.channel.send("You don't have permission to launch the Rocket."); }));
+commands.push(new Command("amiignored", ["am i ignored","do you ignore me","ignoring me","ignore user"], msg => {
+	if(msg.author.id == ignoreUser) {
+		msg.channel.send("I'm told not to talk y- oh.");
+	} else {
+		msg.channel.send("No. If I don't answer to you, it's your fault and/or I have a :bug:");
+	}
+}));
 
 client.login(token);
