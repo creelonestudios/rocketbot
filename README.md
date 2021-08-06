@@ -17,3 +17,7 @@ TOKEN=YourDiscordBotTokenHere
 IGNORE=SomeUserIdToIgnoreHere
 
 ```
+
+##### NOTICE:
+"IGNORE" is only for development purposes.
+Check with `rocket am i ignored` whether the bot ignores you.
